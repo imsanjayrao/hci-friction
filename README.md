@@ -1,9 +1,11 @@
-# Getting Started with Create React App
 Add videos to:
-/public/videos (create if non existant)
 
-On modification of /public/videos run:
-npm generateVideos.js
+`/public/videos` (create if non existent)
+
+On modification of `/public/videos` run:
+
+`npm generateVideos.js`
 
 To start app, run:
-npm start
+
+`npm start`
