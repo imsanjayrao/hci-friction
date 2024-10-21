@@ -24,6 +24,13 @@ const FrictionReels = () => {
   const [nextFrictionElement, setNextFrictionElement] = useState(7);
   const videoRef = useRef(null);
 
+  // Add new state variables for logging
+  const [videosWatched, setVideosWatched] = useState(0);
+  const [unsuccessfulSwipesTotal, setUnsuccessfulSwipesTotal] = useState(0);
+  const [scrollDirectionChanges, setScrollDirectionChanges] = useState(0);
+  const [quoteScreenDisplays, setQuoteScreenDisplays] = useState(0);
+  const [reminderAppearanceCount, setReminderAppearanceCount] = useState(0);
+
   useEffect(() => {
     fetch('/videos.json')
       .then((response) => response.json())
@@ -37,6 +44,14 @@ const FrictionReels = () => {
 
     // Initialize the first friction element after 7 reels
     // setNextFrictionElement(7);
+
+    // Set up logging interval
+    const loggingInterval = setInterval(logData, 60000); // Log every minute
+
+    return () => {
+      clearInterval(loggingInterval);
+      logData(); // Log one last time when component unmounts
+    };
   }, []);
 
   useEffect(() => {
@@ -168,6 +183,33 @@ const FrictionReels = () => {
       case 'right': return <ChevronRight {...iconProps} />;
       default: return null;
     }
+  };
+
+  const logData = () => {
+    const avgTimePerVideo = videosWatched > 0 ? timeSpent / videosWatched : 0;
+    const data = {
+      Videos_Watched: videosWatched,
+      Time_Spent_on_Platform: timeSpent,
+      Avg_Time_Per_Video: avgTimePerVideo.toFixed(2),
+      Unsuccessful_Swipes: unsuccessfulSwipesTotal,
+      Scroll_Direction_Changes: scrollDirectionChanges,
+      Displays_of_Quote_Screen: quoteScreenDisplays,
+      Reminder_Appearance_Count: reminderAppearanceCount
+    };
+    
+    // Convert data to CSV string
+    const headers = Object.keys(data).join(',');
+    const values = Object.values(data).join(',');
+    const csvString = `${headers}\n${values}`;
+
+    // Log to file (this is a mock implementation, as client-side JavaScript can't directly write to files)
+    console.log('Logging data:', csvString);
+    // In a real implementation, you would send this data to a server endpoint
+    // fetch('/api/log', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(data)
+    // });
   };
 
   return (
